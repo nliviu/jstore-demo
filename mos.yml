@@ -1,0 +1,56 @@
+author: Liviu Nicolescu <nliviu@gmail.com>
+description: A Mongoose OS app skeleton based on https://github.com/mongoose-os-apps/empty
+version: 1.0
+
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+manifest_version: 2017-09-29
+
+# Optional. List of tags for online search.
+tags:
+  - c
+
+# List of files / directories with C sources. No slashes at the end of dir names.
+sources:
+  - src
+
+# List of dirs. Files from these dirs will be copied to the device filesystem
+filesystem:
+  - fs
+
+config_schema:
+  - ["debug.level", 2]
+  - ["mqtt.enable", true]
+  - ["mqtt.server", "192.168.0.39:1883"]
+# mqtt_queue
+  - ["mqtt_queue.json_path", "s" , "test.json", {}]
+  - ["mqtt_queue.max_count", "i" , 10, {}]
+  - ["mqtt_queue.interval", "i" , 100, {Title: "Interval in milliseconds between sending each queueud MQTT event upon reconnect"}]
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/boards
+  - origin: https://github.com/mongoose-os-libs/ca-bundle
+  - origin: https://github.com/mongoose-os-libs/rpc-service-config
+  - origin: https://github.com/mongoose-os-libs/rpc-service-fs
+  - origin: https://github.com/mongoose-os-libs/rpc-uart
+  - origin: https://github.com/mongoose-os-libs/rpc-ws
+  - origin: https://github.com/mongoose-os-libs/wifi
+  - origin: https://github.com/mongoose-os-libs/sntp
+  - origin: https://github.com/mongoose-os-libs/ota-http-server
+  
+  - origin: https://github.com/mongoose-os-libs/jstore
+  - origin: https://github.com/mongoose-os-libs/mqtt
+  
+  - origin: https://github.com/nliviu/board-led
+
+conds:
+  - when: mos.platform == "esp32"
+    apply:
+      build_vars:
+# Avoid "W (179) cpu_start: Chip revision is higher than the one configured in menuconfig. Suggest to upgrade it."
+# if you have a board with a chip revision >= 1
+        ESP_IDF_SDKCONFIG_OPTS: >
+          ${build_vars.ESP_IDF_SDKCONFIG_OPTS} 
+          CONFIG_ESP32_REV_MIN_1=y
